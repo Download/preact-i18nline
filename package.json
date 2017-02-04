@@ -56,8 +56,8 @@
     "extend": "^3.0.0",
     "i18nline": "^1.5.0",
     "invariant": "2.2.2",
-    "preact": "^6.4.0",
-    "recast": "^0.10.0",
+    "preact": "^7.1.0",
+    "recast": "^0.11.20",
     "through2": "^2.0.1"
   }
 }

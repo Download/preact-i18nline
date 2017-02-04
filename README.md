@@ -1,6 +1,8 @@
 # preact-i18nline
 #### Keep your translations in line - with Preact!
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Download/preact-i18nline.svg)](https://greenkeeper.io/)
+
 [![npm](https://img.shields.io/npm/v/preact-i18nline.svg)](https://npmjs.com/package/preact-i18nline)
 [![license](https://img.shields.io/npm/l/preact-i18nline.svg)](https://github.com/download/preact-i18nline/LICENSE)
 [![travis](https://img.shields.io/travis/Download/preact-i18nline.svg)](https://travis-ci.org/Download/preact-i18nline)
