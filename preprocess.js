@@ -1,6 +1,9 @@
 var log = require('./util/createLogger')('preact-i18nline:preprocess');
 
 var recast = require('recast');
+var esprima = require('esprima');
+var extend = require('extend');
+
 var b = recast.types.builders;
 
 // http://www.w3.org/TR/html5/dom.html#the-translate-attribute
@@ -49,6 +52,7 @@ var findIndex = function(fn, ary) {
 
 var hasLiteralContent = function(node) {
   if (node.type === "Literal") return true;
+  if (node.type === "JSXText") return true;
   if (node.type !== "JSXElement") return false;
   return node.children && node.children.some(hasLiteralContent);
 };
@@ -299,7 +303,7 @@ function transformationsFor(config) {
     node.children.forEach(function(child) {
       var part;
       var translatable = isTranslatable(child, true);
-      if (child.type === "Literal") {
+      if ((child.type === "Literal") || (child.type === "JSXText")) {
         part = child.value;
         lastPartType = "literal";
       } else if (hasLiteralContent(child) && translatable) {
@@ -383,7 +387,19 @@ function transformationsFor(config) {
 var preprocess = function(source, config) {
   log.debug(log.name + ': preprocessing source with config', config);
 
-  config = config || {};
+  var defaultOptions = {
+    recastOptions: {
+      parser: {
+        parse: function(source) {
+          return esprima.parse(source, {
+            jsx: true,
+            loc: true,
+          });
+        }
+      }
+    }
+  };
+  config = extend(defaultOptions, config || {});
   config.autoTranslateTags = typeof config.autoTranslateTags === 'string' ? config.autoTranslateTags.split(',') : config.autoTranslateTags || [];
   config.neverTranslateTags = typeof config.neverTranslateTags === 'string' ? config.neverTranslateTags.split(',') : config.neverTranslateTags || [];
 

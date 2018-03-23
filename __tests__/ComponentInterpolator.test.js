@@ -38,7 +38,7 @@ describe('ComponentInterpolator', function() {
 
   it('interpolates wrapper components', function() {
     var subject = Subject({
-      string: 'Ohai, Jane, click *here* right ***now **please** ***',
+      string: 'Hi, Jane, click *here* right ***now **please** ***',
       wrappers: {
         '*': <a href='/'><img />$1</a>,
         '**': <i>$1</i>,
@@ -49,10 +49,9 @@ describe('ComponentInterpolator', function() {
     var rendered = removeNoise(render(subject));
     log.log(log.name + ': rendered=', rendered);
     expect(rendered).to.equal(
-      '<hr>Ohai, Jane, click <a href="/"><img>here</a> right <b><em>now <i>please</i> </em></b>'
+      '<hr />Hi, Jane, click <a href="/"><img />here</a> right <b><em>now <i>please</i> </em></b>'
     );
   });
-
 
   it('interpolates placeholder components', function() {
     var subject = Subject({
@@ -66,7 +65,7 @@ describe('ComponentInterpolator', function() {
     var rendered = removeNoise(render(subject));
     log.log(log.name + ': rendered=', rendered);
     expect(rendered).to.equal(
-      'Hi Jane (0), create <input> new accounts'
+      'Hi Jane (0), create <input /> new accounts'
     );
   });
 });
