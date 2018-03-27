@@ -12,7 +12,6 @@ var invariant = require('invariant');
 var Component = require('preact').Component;
 var h = require('preact').h;
 var clone = require('extend').bind(true);
-
 var WRAPPER_PATTERN = /(\*+)/;
 var PLACEHOLDER_PATTERN = /(%\{.*?\})/;
 
@@ -86,8 +85,7 @@ var ComponentInterpolator = function (_Component) {
         token = tokens.shift();
         if (token === eof) break;
         if (token.match(WRAPPER_PATTERN)) {
-          invariant(child = wrappers[token], '<ComponentInterpolator> expected \'' + token + '\' wrapper, none found');
-
+          invariant(child = wrappers[token], `<ComponentInterpolator> expected '${token}' wrapper, none found`);
           child = injectNewDescendants(child, this.interpolateAllComponents(tokens, token), { key: this.keyCounter++ }, true);
           children.push(child);
         } else {
@@ -106,7 +104,7 @@ var ComponentInterpolator = function (_Component) {
         token = tokens.shift();
         if (token.match(PLACEHOLDER_PATTERN)) {
           token = token.slice(2, -1);
-          invariant(this.props.hasOwnProperty(token), '<ComponentInterpolator> expected \'' + token + '\' placeholder value, none found');
+          invariant(this.props.hasOwnProperty(token), `<ComponentInterpolator> expected '${token}' placeholder value, none found`);
           child = this.props[token];
           child = child && child.nodeName ? clone(child, { key: this.keyCounter++ }) : child;
           children.push(child);
