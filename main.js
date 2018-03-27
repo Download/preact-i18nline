@@ -1,7 +1,4 @@
 var log = require('./util/createLogger')('preact-i18nline');
-
-var recast = require("recast");
-
 var preprocess = require("./preprocess");
 
 module.exports = function(i18nline) {
@@ -17,7 +14,7 @@ module.exports = function(i18nline) {
     fileData.skip = fileData.skip && !hasTranslatableText(source);
 
     if (!fileData.skip) {
-      var ast = fileData.ast || recast.parse(source, config.recastOptions);
+      var ast = fileData.ast || this.parse(source);
       preprocess.ast(ast, config);
       fileData.ast = ast;
     }
@@ -27,3 +24,4 @@ module.exports = function(i18nline) {
 };
 
 log.log('Initialized ' + log.name);
+

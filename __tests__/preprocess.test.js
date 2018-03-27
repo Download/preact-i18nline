@@ -5,7 +5,9 @@ var expect = require('chai').expect;
 var preprocess = require('../preprocess');
 
 var subject = function() {
-  return preprocess.apply(null, arguments).replace(/\s+/g, ' ');
+  return preprocess.apply(null, arguments)
+           .replace(/\s+/g, ' ');
+//           .replace(/;$/, '');
 };
 
 describe('preprocess', function() {

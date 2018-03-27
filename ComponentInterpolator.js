@@ -2,7 +2,6 @@ var invariant = require('invariant');
 var Component = require('preact').Component;
 var h = require('preact').h;
 var clone = require('extend').bind(true);
-
 var WRAPPER_PATTERN = /(\*+)/;
 var PLACEHOLDER_PATTERN = /(%\{.*?\})/;
 
@@ -68,7 +67,6 @@ class ComponentInterpolator extends Component {
           child = wrappers[token],
           `<ComponentInterpolator> expected '${token}' wrapper, none found`
         );
-
         child = injectNewDescendants(
           child,
           this.interpolateAllComponents(tokens, token),
@@ -112,3 +110,4 @@ class ComponentInterpolator extends Component {
 }
 
 module.exports = ComponentInterpolator;
+

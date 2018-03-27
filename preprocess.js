@@ -1,10 +1,8 @@
 var log = require('./util/createLogger')('preact-i18nline:preprocess');
 
 var recast = require('recast');
-var esprima = require('esprima');
-var extend = require('extend');
-
 var b = recast.types.builders;
+var parse = require('i18nline/lib/processors/js_processor').prototype.parse;
 
 // http://www.w3.org/TR/html5/dom.html#the-translate-attribute
 // everything per the spec, except:
@@ -33,7 +31,7 @@ var translatableAttributes = {
 var isTranslatableAttribute = function(node, attribute) {
   var name = attribute.name.name;
   if (!translatableAttributes[name]) return false;
-  if (attribute.value.type !== "Literal") return false;
+  if (attribute.value.type !== "StringLiteral") return false;
 
   var rules = translatableAttributes[name];
   if (typeof rules === "function")
@@ -51,7 +49,6 @@ var findIndex = function(fn, ary) {
 };
 
 var hasLiteralContent = function(node) {
-  if (node.type === "Literal") return true;
   if (node.type === "JSXText") return true;
   if (node.type !== "JSXElement") return false;
   return node.children && node.children.some(hasLiteralContent);
@@ -105,7 +102,7 @@ var findAttribute = function(attribute, node, shouldSpliceFn) {
   if (index < 0) return;
 
   var value = attributes[index].value;
-  if (attributes[index].value.type !== "Literal") return;
+  if (attributes[index].value.type !== "StringLiteral") return;
 
   value = value.value;
   if (shouldSpliceFn && shouldSpliceFn(value)) {
@@ -169,7 +166,7 @@ function transformationsFor(config) {
     if (Object.keys(wrappers).length) {
       var wrappersNode = b.objectExpression([]);
       for (key in wrappers) {
-        wrappersNode.properties.push(b.property("init", b.literal(key), wrappers[key]));
+        wrappersNode.properties.push(b.property("init", b.stringLiteral(key), wrappers[key]));
       }
       properties.push(
         b.jsxAttribute(
@@ -200,14 +197,14 @@ function transformationsFor(config) {
         b.jsxIdentifier(interpolatorName)
       ),
       children.map(function(child) {
-        return typeof child === "string" ? b.literal(child) : child;
+        return typeof child === "string" ? b.stringLiteral(child) : child;
       })
     );
   };
 
   var translateCallFor = function(loc, string) {
     var args = [
-      b.literal(string)
+      b.stringLiteral(string)
     ];
 
     // create dummy placeholders; we want ComponentInterpolator to do the
@@ -219,7 +216,7 @@ function transformationsFor(config) {
       while (tokens.length) {
         var token = tokens.shift();
         if (token.match(PLACEHOLDER_PATTERN)) {
-          optionsNode.properties.push(b.property("init", b.literal(token.slice(2, -1)), b.literal(token)));
+          optionsNode.properties.push(b.property("init", b.stringLiteral(token.slice(2, -1)), b.stringLiteral(token)));
         }
       }
       args.push(optionsNode);
@@ -303,7 +300,7 @@ function transformationsFor(config) {
     node.children.forEach(function(child) {
       var part;
       var translatable = isTranslatable(child, true);
-      if ((child.type === "Literal") || (child.type === "JSXText")) {
+      if (child.type === "JSXText") {
         part = child.value;
         lastPartType = "literal";
       } else if (hasLiteralContent(child) && translatable) {
@@ -386,24 +383,10 @@ function transformationsFor(config) {
 
 var preprocess = function(source, config) {
   log.debug(log.name + ': preprocessing source with config', config);
-
-  var defaultOptions = {
-    recastOptions: {
-      parser: {
-        parse: function(source) {
-          return esprima.parse(source, {
-            jsx: true,
-            loc: true,
-          });
-        }
-      }
-    }
-  };
-  config = extend(defaultOptions, config || {});
+  config = config || {};
   config.autoTranslateTags = typeof config.autoTranslateTags === 'string' ? config.autoTranslateTags.split(',') : config.autoTranslateTags || [];
   config.neverTranslateTags = typeof config.neverTranslateTags === 'string' ? config.neverTranslateTags.split(',') : config.neverTranslateTags || [];
-
-  var ast = recast.parse(source, config.recastOptions);
+  var ast = recast.parse(source, {parser: {parse: parse}});
   preprocessAst(ast, config);
   return recast.print(ast).code;
 };
@@ -418,3 +401,4 @@ preprocess.ast = preprocessAst;
 module.exports = preprocess;
 
 log.log('Initialized ' + log.name);
+

@@ -1,7 +1,6 @@
 var log = require('./util/createLogger')('preact-i18nline:webpack-loader');
 
 var I18nline = require("i18nline");
-
 var config = I18nline.config;
 var preprocess = require("./preprocess");
 var hasTranslatableText = require("./hasTranslatableText")(config);
@@ -12,7 +11,7 @@ var hasTranslatableText = require("./hasTranslatableText")(config);
  * will load *all* of i18nline (which includes things like fs, and
  * will fail).
  */
-var noParsePath = "i18nline/dist/lib/i18nline";
+var noParsePath = "i18nline/lib/i18nline";
 var addNoParse = function() {
   var escapeRegExp = require("./util/escapeRegExp");
   var path = require("path");
@@ -35,3 +34,4 @@ module.exports = function(source) {
 };
 
 log.log('Initialized ' + log.name);
+

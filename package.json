@@ -39,7 +39,6 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
-    "babel-plugin-transform-jsx": "^2.0.0",
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-polyfill": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
@@ -50,12 +49,12 @@
     "preact-render-to-string": "^3.7.0"
   },
   "peerDependencies": {
-    "preact": "^8.0.0"
+    "preact": "^7.0.0 || ^8.0.0"
   },
   "dependencies": {
     "esprima": "^4.0.0",
     "extend": "^3.0.1",
-    "i18nline": "^1.6.0",
+    "i18nline": "^1.7.0",
     "invariant": "^2.2.4",
     "preact": "^8.2.7",
     "recast": "^0.14.7",
