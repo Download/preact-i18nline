@@ -6,8 +6,8 @@ var preprocess = require('../preprocess');
 
 var subject = function() {
   return preprocess.apply(null, arguments)
-           .replace(/\s+/g, ' ');
-//           .replace(/;$/, '');
+           .replace(/\s+/g, ' ')
+           .replace(/;$/, '');
 };
 
 describe('preprocess', function() {
