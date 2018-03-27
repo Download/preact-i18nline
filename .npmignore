@@ -1,0 +1,10 @@
+__tests__
+.vscode
+examples
+test_utils
+.babelrc
+.eslintignore
+.eslintrc.yml
+.gitignote
+.jshintignore
+.jshintrc

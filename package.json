@@ -1,6 +1,6 @@
 {
   "name": "preact-i18nline",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Keep your translations in line - with Preact!",
   "main": "main.js",
   "scripts": {
@@ -41,7 +41,7 @@
     "babel-core": "^6.26.0",
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-polyfill": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
     "chai": "^4.1.2",
     "eslint": "^4.19.1",
     "eslint-plugin-react": "^7.7.0",
@@ -49,6 +49,7 @@
     "preact-render-to-string": "^3.7.0"
   },
   "peerDependencies": {
+    "i18nline": "^1.7.0",
     "preact": "^7.0.0 || ^8.0.0"
   },
   "dependencies": {
