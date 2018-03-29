@@ -1,8 +1,9 @@
 {
   "name": "preact-i18nline",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Keep your translations in line - with Preact!",
   "main": "main.js",
+  "browser": "i18n.js",
   "scripts": {
     "test": "eslint . && mocha --require babel-core/register \"./{,!(node_modules)/**}/*.test.js\"",
     "dist": "babel -d dist ComponentInterpolator.js extensions/i18n_js.js"
@@ -49,13 +50,13 @@
     "preact-render-to-string": "^3.7.0"
   },
   "peerDependencies": {
-    "i18nline": "^1.7.0",
+    "i18nline": "^1.7.1",
     "preact": "^7.0.0 || ^8.0.0"
   },
   "dependencies": {
     "esprima": "^4.0.0",
     "extend": "^3.0.1",
-    "i18nline": "^1.7.0",
+    "i18nline": "^1.7.1",
     "invariant": "^2.2.4",
     "preact": "^8.2.7",
     "recast": "^0.14.7",
