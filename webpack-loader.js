@@ -1,6 +1,6 @@
 var log = require('./util/createLogger')('preact-i18nline:webpack-loader');
 
-var I18nline = require("i18nline");
+var I18nline = require("i18nline/lib/main");
 var config = I18nline.config;
 var preprocess = require("./preprocess");
 var hasTranslatableText = require("./hasTranslatableText")(config);
