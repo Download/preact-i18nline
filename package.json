@@ -1,6 +1,6 @@
 {
   "name": "preact-i18nline",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0",
   "description": "Keep your translations in line - with Preact!",
   "main": "main.js",
   "scripts": {
@@ -49,14 +49,14 @@
     "preact-render-to-string": "^3.7.0"
   },
   "peerDependencies": {
-    "i18nline": "2.0.0-beta.1 || ^2.0.0",
+    "i18nline": "^2.0.0",
     "preact": "^7.0.0 || ^8.0.0"
   },
   "dependencies": {
     "chalk": "^2.3.2",
     "esprima": "^4.0.0",
     "extend": "^3.0.1",
-    "i18nline": "^2.0.0-beta.1",
+    "i18nline": "^2.0.1",
     "invariant": "^2.2.4",
     "preact": "^8.2.7",
     "recast": "^0.14.7",
