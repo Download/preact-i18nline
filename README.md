@@ -68,6 +68,121 @@ preact-i18nline enhances I18nline, so that it can extract any of these
 `I18n.t` calls). Once you get everything translated, just stick it on
 `I18n.translations` and everything will Just Work™.
 
+## Project setup
+To setup a project with `preact-i18nline`, we mostly follow the `i18nline` 
+project setup, with some small changes. The overview of the setup is repeated 
+below, but for most steps please refer to the [i18nline project setup docs](https://github.com/Download/i18nline/tree/v2#project-setup).
+
+* Install `i18nline` and `preact-i18nline` (see next section)
+* Create a `script` in *package.json* to run the command-line tool (see i18nline docs)
+* Add the `preact-i18nline/webpack-loader` to your Webpack configuration
+* Import `I18n` and use `translate="yes"` to render internationalized text.
+* Create an empty file in the `out` folder (by default: `'src/i18n'`) named 
+  `'[locale].json'` for each locale you want to support.  (see i18nline docs)
+* Run `i18nline synch` to synch the translation files and index file.  (see i18nline docs)
+* `import` the index file into your project.  (see i18nline docs)
+* Call `I18n.changeLocale` to set the locale (which loads the right 
+  translation file on demand, see i18nline docs)
+* Call `I18n.on` to react to the `'change'` event (e.g. by re-rendering) (see i18nline docs)
+* Get your translators to translate all the messages :)
+
+## Installation
+
+```sh
+npm install -S i18nline preact-i18nline
+```
+
+## Add the Webpack loader
+Add [this loader](https://github.com/download/preact-i18nline/blob/master/webpack-loader.js)
+to your config, e.g.
+
+*webpack.config.js*
+```js
+{
+  module: {
+    loaders: [
+      { test: /\.js$/, loader: "preact-i18nline/webpack-loader" }
+      ...
+    ],
+  },
+  ...
+}
+```
+
+### For Preact CLI 
+If your app is generated with Preact CLI, Webpack is configured and managed 
+for you. So instead of configuring Webpack directly, we configure Preact CLI:
+
+*preact.config.js*
+```js
+export default (config, env, helpers) => {
+	// Use Preact CLI's helpers object to get the babel-loader
+	let babel = helpers.getLoadersByName(config, 'babel-loader')[0].rule;
+	// Update the loader config to include preact-i18nline
+	babel.loader = [
+		{ // create an entry for the old loader
+			loader: babel.loader,
+			options: babel.options
+		},
+		{ // add the preact-i18nline webpack loader
+			loader: 'preact-i18nline/webpack-loader'
+		}
+	];
+	// remove the old loader options
+	delete babel.options;
+};
+```
+
+## Usage
+In the Javascript files you want to translate, import I18n:
+
+```js
+import I18n from 'i18nline';
+```
+
+Then, write your JSX and add `translate="yes"` to any elements
+you want to translate:
+
+*src/app/Greeting.jsx*
+```js
+import { h } from 'preact';
+import I18n from 'i18nline';
+
+const User = props => (
+  <b>{props.name}</b>
+)
+
+const Greeting = props => (
+	<p class="greeting" translate="yes">
+    Hello, <User name="Bob" />!
+  </p>
+);
+
+export default Greeting;
+```
+
+Now you are ready to generate the translation files. Run the
+`i18nline synch` command via the script you setup in *package.json*:
+
+```sh
+$ npm run i18n
+```
+
+This will generate 3 files for you (in `src/18n` by default):
+
+* `default.json`: the default translations extracted from the source
+* `en.json`: the translation file for the default locale (`'en'` by default)
+* `index.js`: the index file to import into your project
+
+To add additional languages, just add empty files named `[locale].json` 
+(e.g. `'fr.json'`, `'de.json'`, etc) in the same folder and run 
+`i18nline synch` again. `i18nline` will populate the empty files with
+the default translations.
+
+To learn how to change locales and listen to locale change events, 
+refer to the [i18nline documentation](https://github.com/Download/i18nline/tree/v2#call-i18nchangelocale-to-change-the-locale).
+
+
 ## Examples
 
 ### Placeholders
@@ -130,149 +245,44 @@ within a translated element.
 </div>
 ```
 
-## Installation
-
-```sh
-npm install -S i18nline preact-i18nline
-```
-
 ## Configuration
 
-In your `package.json`, create an object named `"i18n"` and 
-specify your project's global configuration settings there. Or, 
-if you prefer, you can create a `.i18nrc` options file in the root
-of your project.
+From version 2 onwards, `i18nline` and `preact-i18nline` should be 
+effectively zero configuration for most projects. Stuff should Just Work.
 
-The typical configuration you'd want for a preact project would 
-look something like this:
+If you find you need to change the configuration, you can configure 
+i18nline through *package.json*, *i18nline.rc* or command line arguments.
 
-```json
-{
-  "plugins": [
-    "preact-i18nline"
-  ],
-  "outputFile": "my/translations/en.json"
-}
-```
+If multiple sources of configuration are present, they will be 
+applied in this order, with the last option specified overwriting
+the previous settings:
 
-Important here is that you register `preact-i18nline` as a plugin.
-This will ensure that when you export strings for translation, all of your
-new `translate="yes"` stuff will get picked up.
+* Defaults
+* package.json
+* .i18nrc file
+* CLI arguments
 
-Refer to the [i18nline config docs](https://github.com/download/i18nline#configuration)
-for details on the configuration options.
+Refer to the [i18nline configuration docs](https://github.com/Download/i18nline/tree/v2#configuration) for details.
 
-
-## Usage 
-Preprocess all your js and jsx files with preact-i18nline
-
-How you hook up the preprocessor will depend on how you bundle your assets:
-
-#### webpack
-
-Add [this loader](https://github.com/download/preact-i18nline/blob/master/webpack-loader.js)
-to your config, e.g.
-
-```js
-{
-  module: {
-    loaders: [
-      { test: /\.js$/, loader: "preact-i18nline/webpack-loader" }
-      ...
-    ],
-  },
-  ...
-}
-```
-
-**TODO: example not ported over yet**
-Check out [this example app](https://github.com/download/preact-i18nline/tree/master/examples/webpack)
-to see how everything is wired together.
-
-#### browserify
-
-Use [this transform](https://github.com/download/preact-i18nline/blob/master/browserify-transform.js),
-e.g.
-
-```bash
-$ browserify -t preact-i18nline/browserify-transform app.js > bundle.js
-```
-
-#### something else?
-
-It's not too hard to roll your own; as you can see in the loader and
-transform above, the heavy lifting is done by `preprocess`. So whether
-you use ember-cli, sprockets, grunt concat, etc., it's relatively
-painless to add a little glue code that runs preprocess on each
-source file.
-
-## Add the preact-i18nline runtime extensions to i18n
-
-Both i18nline and preact-i18nline add some extensions to i18n.js to 
-help with the runtime processing of the translations. You can require
-I18n via preact-i18nline to get a `I18n` object that has all extensions
-applied already:
-
-```js
-var I18n = require("preact-i18nline/i18n");
-```
-
-Alternatively, you can apply the extensions manually:
-
-```js
-var I18n = // get it from somewhere, script tag, whatever
-require('i18nline/lib/extensions/i18n_js')(I18n);
-require('preact-i18nline/dist/extensions/i18n_js')(I18n);
-```
-
-## Working with translations
-
-Since preact-i18nline is just an i18nline plugin, you can use the i18nline 
-CLI to extract translations from your codebase; it will pick up normal 
-`I18n.t` usage, as well as your new `translate="yes"` components. The 
-easiest way to do this is to add a `"scripts"` section to your package.json
-and call i18nline from there:
+### Auto-config of plugins
+Since version 2, `i18nline` supports auto-config of plugins by looking 
+at the dependencies for your project. So it will automatically detect 
+`preact-i18nline` for you. You don't have to do anything for it. But 
+just for completeness, here is how you would configure the 
+`preact-18nline` plugin if you wanted to do it explicitly:
 
 *package.json*
 ```json
 {
   "i18n": {
-    "plugins": {
+    "plugins": [
       "preact-i18nline"
-    }
-  },
-  "scripts": {
-    "translations": "i18nline export"
+    ]
   }
 }
 ```
 
-Then you can simply invoke it via NPM as usual:
-
-```sh
-$ npm run translations
-```
-
-Once you've gotten all your translations back from the translators,
-simply stick them on `I18n.translations`; it expects the translations 
-to be of the format:
-
-```js
-I18n.translations = {
-  "en": {
-    "some_key": "Hello World",
-    "another_key": "What's up?"
-  },
-  "es": {
-    "some_key": "Hola mundo",
-    "another_key": "¿Qué tal?"
-  },
-  ...
-}
-```
-
-## Configuration
-
+## Extra configuration options
 In addition to the 
 [i18nline configuration](https://github.com/download/i18nline#configuration),
 preact-i18nline adds some options specific to JSX processing:
@@ -301,11 +311,9 @@ to autoTranslateTags, and its runtime implementation could be as simple
 as:
 
 ```js
-class T extends Component {
-  render() {
-    return <span {...this.props} />;
-  }
-}
+const T = (props) => (
+  <span {...this.props} />
+)
 ```
 
 ### neverTranslateTags
@@ -331,6 +339,89 @@ If those are ever nested in a larger translatable element, they
 will be assumed to be untranslatable, and a placeholder will be created
 for them. 
 
+
+## Tool support
+`preact-i18nline` mainly focuses on Webpack for it's tool support. There is some
+support for Browserify (untested) or you can roll your own integration.
+
+### browserify
+
+There is some support for Browserify through [this transform](https://github.com/download/preact-i18nline/blob/master/browserify-transform.js),
+e.g.
+
+```bash
+$ browserify -t preact-i18nline/browserify-transform app.js > bundle.js
+```
+
+However, to be honest it was inherited from `react-i18nliner` and I'm not using
+it myself and haven't tested it in ages so your mileage may vary. If you do use
+it, please report any issues you may find (and be prepared to make a PR for it).
+
+### Roll your own
+
+It's not too hard to roll your own tool support; as you can see in the 
+loader and transform above, the heavy lifting is done by `preprocess`. 
+So whether you use ember-cli, sprockets, grunt concat, etc., it's 
+relatively painless to add a little glue code that runs preprocess 
+on each source file.
+
+## Add the preact-i18nline runtime extensions to i18n
+
+Both i18nline and preact-i18nline add some extensions to i18n.js to 
+help with the runtime processing of the translations. 
+
+When you follow the recommended project setup you should not have to worry
+about this. `i18nline` will automatically detect `preact-i18nline` and 
+modify the generated index file to import `I18n` from `preact-inline/i18n` 
+instead of from `i18nline`. That will automatically take care of things.
+However if you want more control or are not using the generated index file,
+you can require I18n via preact-i18nline to get a `I18n` object that has all 
+extensions applied already:
+
+```js
+var I18n = require("preact-i18nline/i18n");
+```
+
+You only need to do this in one place (e.g. in your app's main file), because 
+the returned instance is actually the same object as is returned by `i18nline`.
+`preact-i18nline` just adds its extensions to it.
+
+Alternatively, you can apply the extensions manually:
+
+```js
+var I18n = // get it from somewhere, script tag, whatever
+// if you did not get it from `i18nline`, you need to apply 
+// the i18nline extensions manually as well
+require('i18nline/lib/extensions/i18n_js')(I18n);
+// finally apply the preact-i18nline extensions
+require('preact-i18nline/dist/extensions/i18n_js')(I18n);
+```
+
+## Working with translations
+
+Since preact-i18nline is just an i18nline plugin, you can use the i18nline 
+CLI to extract translations from your codebase; it will pick up normal 
+`I18n.t` usage, as well as your new `translate="yes"` components. The 
+easiest way to do this is to add a `"scripts"` section to your package.json
+and call i18nline from there:
+
+*package.json*
+```json
+{
+  "scripts": {
+    "i18n": "i18nline synch"
+  }
+}
+```
+
+Then you can simply invoke it via NPM as usual:
+
+```sh
+$ npm run i18n
+```
+
+Refer to the [i18nline project setup docs](https://github.com/Download/i18nline/tree/v2#create-a-script-to-run-the-command-line-tool) 
+for more information.
 
 ## Gotchas
 
