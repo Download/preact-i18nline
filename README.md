@@ -153,7 +153,7 @@ const User = props => (
 )
 
 const Greeting = props => (
-	<p class="greeting" translate="yes">
+  <p class="greeting" translate="yes">
     Hello, <User name="Bob" />!
   </p>
 );
